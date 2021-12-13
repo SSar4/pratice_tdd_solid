@@ -1,0 +1,16 @@
+{
+    "extends": [
+      "standard-with-typescript",
+      "plugin:prettier/recommended"
+    ], 
+
+    "plugins": ["prettier"],
+    "rules": {
+      "prettier/prettier": "error",
+      "@typescript-eslint/strict-boolean-expressions":"off"
+    },
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    }
+  
+}
