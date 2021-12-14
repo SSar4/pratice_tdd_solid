@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
-import { HttpRequest, HttpResponse } from '../protocols/http';
-import { badRequest, serverError } from '../helper/http.help';
-import { EmailValidator, Contoller, SenhaValidator } from '../protocols/index';
+import {
+  HttpRequest,
+  HttpResponse,
+  Contoller,
+  EmailValidator,
+  AddAccount,
+  SenhaValidator,
+} from './sigup-protocols';
+import { badRequest, serverError, ok } from '../../helper/http.help';
 import {
   InvalidParamError,
   MissingParam,
   PassConfirmInvalid,
-} from '../erros/index';
-import { AddAccount } from '../../domain/usecase/add-account';
-
+} from '../../erros/index';
 export class SigupController implements Contoller {
   private readonly addAccount: AddAccount;
   private readonly emailValidator: EmailValidator;
@@ -22,7 +26,7 @@ export class SigupController implements Contoller {
     this.senhaValidator = senhaValidator;
     this.addAccount = addAccount;
   }
-  handle(httpRequest: HttpRequest): HttpResponse {
+  async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const requiredField = ['nome', 'email', 'pass', 'passConfirm'];
       for (const field of requiredField) {
@@ -43,11 +47,8 @@ export class SigupController implements Contoller {
       if (!isValidSenha) {
         return badRequest(new InvalidParamError('senha'));
       }
-      this.addAccount.add({ nome, pass, email });
-      return {
-        statusCode: 200,
-        body: {},
-      };
+      const account = await this.addAccount.add({ nome, pass, email });
+      return ok(account);
     } catch (error) {
       return serverError();
     }
